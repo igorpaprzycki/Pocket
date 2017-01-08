@@ -31,4 +31,6 @@ dependencies {
     // https://mvnrepository.com/artifact/com.j256.ormlite/ormlite-android
     compile 'com.j256.ormlite:ormlite-android:5.0'
     compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.facebook.stetho:stetho:1.4.2'
+
 }

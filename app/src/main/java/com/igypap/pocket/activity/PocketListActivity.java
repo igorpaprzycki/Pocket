@@ -51,6 +51,13 @@ public class PocketListActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRowClick(Link link) {
+        Intent intent = new Intent(this, EditElementActivity.class);
+        intent.putExtra(EditElementActivity.EXTRA_ID, link.getId());
+        startActivity(intent);
+    }
+
+    @Override
     public void onActionClick(View anchor, Link link) {
         mLink = link;
         if (link.getType() == Link.TYPE_LINK) {

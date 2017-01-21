@@ -70,6 +70,13 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
             ButterKnife.bind(this, itemView);
         }
 
+        @OnClick
+        void onRowClick() {
+            if (mActionListener != null) {
+                mActionListener.onRowClick(mCurrentLink);
+            }
+        }
+
         @OnClick(R.id.link_symbol)
         void onSymbolClick(View clicked) {
             if (mActionListener != null) {
@@ -79,6 +86,7 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
     }
 
     public interface ActionListener {
+        void onRowClick(Link link);
         void onActionClick(View anchor, Link link);
     }
 }

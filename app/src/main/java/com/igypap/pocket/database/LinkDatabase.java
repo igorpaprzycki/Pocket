@@ -12,4 +12,8 @@ public interface LinkDatabase {
     List<Link> getLinks();
 
     void create(Link link);
+
+    Link getLink(int id);
+
+    void update(Link link);
 }

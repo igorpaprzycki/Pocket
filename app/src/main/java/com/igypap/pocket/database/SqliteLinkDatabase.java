@@ -48,4 +48,23 @@ public class SqliteLinkDatabase implements LinkDatabase {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Link getLink(int id) {
+        try {
+            return mDao.queryForId(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void update(Link link) {
+        try {
+            mDao.update(link);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

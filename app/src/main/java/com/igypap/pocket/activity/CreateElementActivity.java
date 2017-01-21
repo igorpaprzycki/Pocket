@@ -30,12 +30,15 @@ public class CreateElementActivity extends AppCompatActivity {
     EditText mFormReference;
     @BindArray(R.array.link_types_mapping)
     int[] mTypesMapping;
+    LinkDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_element);
         ButterKnife.bind(this);
+        mDatabase = new SqliteLinkDatabase(this);
+
 
         //get the mapping array without ButterKnife
 //        getResources().getIntArray(R.array.link_types_mapping);
@@ -53,7 +56,7 @@ public class CreateElementActivity extends AppCompatActivity {
         }
     }
 
-    private int getSelectedType() {
+    protected int getSelectedType() {
         return mTypesMapping[mFormType.getSelectedItemPosition()];
     }
 
@@ -87,15 +90,15 @@ public class CreateElementActivity extends AppCompatActivity {
                 return;
             }
         }
+        saveElement(title, reference);
+        finish();
+    }
+
+    protected void saveElement(String title, String reference) {
         Link link = new Link();
         link.setName(title);
         link.setReference(reference);
         link.setType(getSelectedType());
-
-        LinkDatabase database = new SqliteLinkDatabase(this);
-        database.create(link);
-
-        finish();
-
+        mDatabase.create(link);
     }
 }

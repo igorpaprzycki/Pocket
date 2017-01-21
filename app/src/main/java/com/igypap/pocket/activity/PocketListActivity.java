@@ -5,7 +5,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.igypap.pocket.R;
 import com.igypap.pocket.adapter.LinksAdapter;
@@ -17,9 +20,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class PocketListActivity extends AppCompatActivity
-        implements LinksAdapter.ActionListener{
+        implements LinksAdapter.ActionListener, PopupMenu.OnMenuItemClickListener {
     @BindView(R.id.activity_pocket_list)
     RecyclerView mList;
+    private Link mLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +43,29 @@ public class PocketListActivity extends AppCompatActivity
     }
 
     @Override
-    public void onActionClick(Link link) {
-       if (link.getType() == Link.TYPE_LINK){
-           Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+link.getReference()));
-           startActivity(intent);
-       }else if (link.getType() == link.TYPE_PHONE){
-           Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:"+link.getReference()));
-           startActivity(intent);
-       }
+    public void onActionClick(View anchor, Link link) {
+        mLink = link;
+        if (link.getType() == Link.TYPE_LINK) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + link.getReference()));
+            startActivity(intent);
+        } else if (link.getType() == link.TYPE_PHONE) {
+            PopupMenu menu = new PopupMenu(this, anchor);
+            menu.inflate(R.menu.action_menu);
+            menu.setOnMenuItemClickListener(this);
+            menu.show();
+        }
+    }
 
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        if (item.getItemId() == R.id.action_call) {
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mLink.getReference()));
+            startActivity(intent);
+        } else if (item.getItemId() == R.id.action_sms) {
+            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:" + mLink.getReference()));
+            intent.putExtra("sms_body", "Cześć " + mLink.getName());
+            startActivity(intent);
+        }
+        return true;
     }
 }

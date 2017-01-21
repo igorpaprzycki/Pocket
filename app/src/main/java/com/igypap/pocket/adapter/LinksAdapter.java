@@ -71,15 +71,15 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
         }
 
         @OnClick(R.id.link_symbol)
-        void onSymbolClick() {
+        void onSymbolClick(View clicked) {
             if (mActionListener != null) {
-                mActionListener.onActionClick(mCurrentLink);
+                mActionListener.onActionClick(clicked, mCurrentLink);
             }
         }
     }
 
     public interface ActionListener {
-        void onActionClick(Link link);
+        void onActionClick(View anchor, Link link);
     }
 }
 

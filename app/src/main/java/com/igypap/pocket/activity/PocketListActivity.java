@@ -15,6 +15,11 @@ import com.igypap.pocket.adapter.LinksAdapter;
 import com.igypap.pocket.database.LinkDatabase;
 import com.igypap.pocket.database.SqliteLinkDatabase;
 import com.igypap.pocket.model.Link;
+import com.igypap.pocket.settings.SettingsPreferences;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +32,7 @@ public class PocketListActivity extends AppCompatActivity
     RecyclerView mList;
     private Link mLink;
     private LinkDatabase mDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +73,12 @@ public class PocketListActivity extends AppCompatActivity
     }
 
     @Override
+    public void onRowLongClick(Link link) {
+        mDatabase.delete(link);
+        refreshList();
+    }
+
+    @Override
     public void onActionClick(View anchor, Link link) {
         mLink = link;
         if (link.getType() == Link.TYPE_LINK) {
@@ -97,7 +109,28 @@ public class PocketListActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mDatabase = new SqliteLinkDatabase(this);
-        LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
-        mList.setAdapter(mAdapter);
+
+        refreshList();
+    }
+
+    private void refreshList() {
+        SettingsPreferences prefs = new SettingsPreferences(this);
+        List<Link> links = mDatabase.getLinks();
+        if (prefs.isSort()) {
+            Collections.sort(links);
+            Collections.reverse(links);
+        } else {
+            Collections.sort(links);
+        }
+        for (Iterator<Link> it = links.iterator(); it.hasNext(); ) {
+            Link element = it.next();
+            boolean shouldRemoveLink = element.getType() == Link.TYPE_LINK && !prefs.isShowLinks();
+            boolean shouldRemovePhone = element.getType() == Link.TYPE_PHONE && !prefs.isShowPhones();
+
+            if (shouldRemoveLink || shouldRemovePhone) {
+                it.remove();
+            }
+        }
+        mList.setAdapter(new LinksAdapter(links, this));
     }
 }

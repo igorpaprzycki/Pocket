@@ -67,4 +67,13 @@ public class SqliteLinkDatabase implements LinkDatabase {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void delete(Link link) {
+        try {
+            mDao.delete(link);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

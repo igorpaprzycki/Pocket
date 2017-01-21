@@ -8,7 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
  */
 
 @DatabaseTable(tableName = "link")
-public class Link {
+public class Link implements Comparable<Link> {
     public static final int TYPE_PHONE = 1;
     public static final int TYPE_LINK = 2;
 
@@ -51,5 +51,11 @@ public class Link {
 
     public void setReference(String reference) {
         this.reference = reference;
+    }
+
+
+    @Override
+    public int compareTo(Link o) {
+        return name.compareTo(o.getName());
     }
 }

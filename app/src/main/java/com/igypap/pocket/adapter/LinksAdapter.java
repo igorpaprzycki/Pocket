@@ -15,6 +15,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 /**
  * Created by igypap on 08.01.17.
@@ -77,6 +78,14 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
             }
         }
 
+        @OnLongClick
+        boolean onLongRowClick() {
+            if (mActionListener != null) {
+                mActionListener.onRowLongClick(mCurrentLink);
+            }
+            return true;
+        }
+
         @OnClick(R.id.link_symbol)
         void onSymbolClick(View clicked) {
             if (mActionListener != null) {
@@ -87,7 +96,10 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
 
     public interface ActionListener {
         void onRowClick(Link link);
+
+        void onRowLongClick(Link link);
         void onActionClick(View anchor, Link link);
+
     }
 }
 

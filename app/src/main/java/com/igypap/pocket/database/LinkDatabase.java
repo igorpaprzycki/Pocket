@@ -16,4 +16,6 @@ public interface LinkDatabase {
     Link getLink(int id);
 
     void update(Link link);
+
+    void delete(Link link);
 }

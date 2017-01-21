@@ -83,5 +83,3 @@ public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHo
     }
 }
 
-// TODO: 08.01.17 po kliknieciu na ikonki otworzyc link albo wywolac telefon/sms
-//wykonanie poprzez intenty niejawne

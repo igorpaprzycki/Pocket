@@ -18,12 +18,14 @@ import com.igypap.pocket.model.Link;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class PocketListActivity extends AppCompatActivity
         implements LinksAdapter.ActionListener, PopupMenu.OnMenuItemClickListener {
     @BindView(R.id.activity_pocket_list)
     RecyclerView mList;
     private Link mLink;
+    private LinkDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +35,8 @@ public class PocketListActivity extends AppCompatActivity
 
         //show list items horizontally one after another
         mList.setLayoutManager(new LinearLayoutManager(this));
-        LinkDatabase database = new SqliteLinkDatabase(this);
-        database.getLinks();
+        mDatabase = new SqliteLinkDatabase(this);
+        //mDatabase.getLinks();
 
         LinkDatabase mDatabase = new SqliteLinkDatabase(this);
         LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
@@ -42,13 +44,19 @@ public class PocketListActivity extends AppCompatActivity
 
     }
 
+    @OnClick(R.id.fab)
+    void onFabClick() {
+        Intent intent = new Intent(this, CreateElementActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onActionClick(View anchor, Link link) {
         mLink = link;
         if (link.getType() == Link.TYPE_LINK) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://" + link.getReference()));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(link.getReference()));
             startActivity(intent);
-        } else if (link.getType() == link.TYPE_PHONE) {
+        } else if (link.getType() == Link.TYPE_PHONE) {
             PopupMenu menu = new PopupMenu(this, anchor);
             menu.inflate(R.menu.action_menu);
             menu.setOnMenuItemClickListener(this);
@@ -67,5 +75,13 @@ public class PocketListActivity extends AppCompatActivity
             startActivity(intent);
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDatabase = new SqliteLinkDatabase(this);
+        LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
+        mList.setAdapter(mAdapter);
     }
 }

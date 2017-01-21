@@ -14,16 +14,19 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by igypap on 08.01.17.
  */
 
-public class PocketLinkAdapter extends RecyclerView.Adapter<PocketLinkAdapter.PocketViewHolder> {
+public class LinksAdapter extends RecyclerView.Adapter<LinksAdapter.PocketViewHolder> {
     private List<Link> mLinks;
+    private ActionListener mActionListener;
 
-    public PocketLinkAdapter(List<Link> mLinks) {
+    public LinksAdapter(List<Link> mLinks, ActionListener mActionListener) {
         this.mLinks = mLinks;
+        this.mActionListener = mActionListener;
     }
 
     @Override
@@ -36,12 +39,13 @@ public class PocketLinkAdapter extends RecyclerView.Adapter<PocketLinkAdapter.Po
     @Override
     public void onBindViewHolder(PocketViewHolder holder, int position) {
         Link item = mLinks.get(position);
+        holder.mCurrentLink = item;
 
         holder.mLinkReference.setText(item.getReference());
         holder.mLinkTitle.setText(item.getName());
         if (item.getType() == Link.TYPE_PHONE) {
             holder.mLinkSymbol.setImageResource(android.R.drawable.ic_menu_call);
-        } else {
+        } else if (item.getType() == Link.TYPE_LINK) {
             holder.mLinkSymbol.setImageResource(android.R.drawable.ic_menu_share);
         }
     }
@@ -59,10 +63,23 @@ public class PocketLinkAdapter extends RecyclerView.Adapter<PocketLinkAdapter.Po
         @BindView(R.id.link_symbol)
         ImageView mLinkSymbol;
 
+        Link mCurrentLink;
+
         public PocketViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+
+        @OnClick(R.id.link_symbol)
+        void onSymbolClick() {
+            if (mActionListener != null) {
+                mActionListener.onActionClick(mCurrentLink);
+            }
+        }
+    }
+
+    public interface ActionListener {
+        void onActionClick(Link link);
     }
 }
 

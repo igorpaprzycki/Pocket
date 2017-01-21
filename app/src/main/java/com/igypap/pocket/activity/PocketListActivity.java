@@ -19,6 +19,7 @@ import com.igypap.pocket.model.Link;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnLongClick;
 
 public class PocketListActivity extends AppCompatActivity
         implements LinksAdapter.ActionListener, PopupMenu.OnMenuItemClickListener {
@@ -42,12 +43,20 @@ public class PocketListActivity extends AppCompatActivity
         LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
         mList.setAdapter(mAdapter);
 
+
     }
 
     @OnClick(R.id.fab)
     void onFabClick() {
         Intent intent = new Intent(this, CreateElementActivity.class);
         startActivity(intent);
+    }
+
+    @OnLongClick(R.id.fab)
+    boolean onFabLongClick() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+        return true;
     }
 
     @Override

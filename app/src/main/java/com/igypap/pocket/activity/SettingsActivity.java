@@ -1,7 +1,5 @@
 package com.igypap.pocket.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.CheckBox;
@@ -10,6 +8,7 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.igypap.pocket.R;
+import com.igypap.pocket.settings.SettingsPreferences;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
     CheckBox mShowPhones;
     @BindView(R.id.show_links)
     CheckBox mShowLinks;
-    private SharedPreferences mPrefs;
+    private SettingsPreferences mPrefs;
 
 
     @Override
@@ -35,10 +34,10 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
 
-        mPrefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        mShowPhones.setChecked(mPrefs.getBoolean("show_phones", true));
-        mShowLinks.setChecked(mPrefs.getBoolean("show_links", true));
-        selectSort(mPrefs.getBoolean("sort", false));
+        mPrefs = new SettingsPreferences(this);
+        mShowPhones.setChecked(mPrefs.isShowPhones());
+        mShowLinks.setChecked(mPrefs.isShowLinks());
+        selectSort(mPrefs.isSort());
 
     }
 
@@ -52,11 +51,9 @@ public class SettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Zaznacz conajmniej jeden typ wyświetlania!", Toast.LENGTH_SHORT).show();
             return;
         }
-        mPrefs.edit()
-                .putBoolean("show_phones", mShowPhones.isChecked())
-                .putBoolean("show_links", mShowLinks.isChecked())
-                .putBoolean("sort", mSortGroup.getCheckedRadioButtonId() == R.id.settings_sort_descending)
-                .apply();
+        mPrefs.setShowLinks(mShowLinks.isChecked());
+        mPrefs.setShowPhones(mShowPhones.isChecked());
+        mPrefs.setSort(mSortGroup.getCheckedRadioButtonId() == R.id.settings_sort_descending);
         finish();
     }
 }

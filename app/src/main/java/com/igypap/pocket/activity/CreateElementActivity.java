@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.igypap.pocket.R;
 import com.igypap.pocket.database.LinkDatabase;
+import com.igypap.pocket.database.LinksApiFactory;
 import com.igypap.pocket.database.SqliteLinkDatabase;
 import com.igypap.pocket.model.Link;
 
@@ -21,6 +22,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreateElementActivity extends AppCompatActivity {
     @BindView(R.id.form_title)
@@ -110,15 +114,28 @@ public class CreateElementActivity extends AppCompatActivity {
             }
         }
         saveElement(title, reference);
-        finish();
     }
 
     protected void saveElement(String title, String reference) {
-        Link link = new Link();
-        link.setName(title);
-        link.setReference(reference);
-        link.setType(getSelectedType());
-        mDatabase.create(link);
+        LinksApiFactory.get().createLink(title, getSelectedType(), reference)
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.code() == 201) {
+                            Toast.makeText(CreateElementActivity.this, "Dodano do bazy.",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            onFailure(call, null);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(CreateElementActivity.this, "Błąd dodawania do bazy !",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     protected int getTypeIndex(int type) {

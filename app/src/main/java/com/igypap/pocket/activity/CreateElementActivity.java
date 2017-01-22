@@ -10,9 +10,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.igypap.pocket.R;
-import com.igypap.pocket.database.LinkDatabase;
 import com.igypap.pocket.database.LinksApiFactory;
-import com.igypap.pocket.database.SqliteLinkDatabase;
 import com.igypap.pocket.model.Link;
 
 import java.util.regex.Pattern;
@@ -35,14 +33,12 @@ public class CreateElementActivity extends AppCompatActivity {
     EditText mFormReference;
     @BindArray(R.array.link_types_mapping)
     int[] mTypesMapping;
-    LinkDatabase mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ButterKnife.bind(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_element);
-        ButterKnife.bind(this);
-        mDatabase = new SqliteLinkDatabase(this);
 
         handleSharing();
 

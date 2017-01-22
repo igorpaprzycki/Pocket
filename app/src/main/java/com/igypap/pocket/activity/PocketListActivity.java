@@ -13,9 +13,7 @@ import android.widget.Toast;
 
 import com.igypap.pocket.R;
 import com.igypap.pocket.adapter.LinksAdapter;
-import com.igypap.pocket.database.LinkDatabase;
 import com.igypap.pocket.database.LinksApiFactory;
-import com.igypap.pocket.database.SqliteLinkDatabase;
 import com.igypap.pocket.model.Link;
 import com.igypap.pocket.settings.SettingsPreferences;
 
@@ -36,7 +34,6 @@ public class PocketListActivity extends AppCompatActivity
     @BindView(R.id.activity_pocket_list)
     RecyclerView mList;
     private Link mLink;
-    private LinkDatabase mDatabase;
 
 
     @Override
@@ -47,26 +44,8 @@ public class PocketListActivity extends AppCompatActivity
 
         //show list items horizontally one after another
         mList.setLayoutManager(new LinearLayoutManager(this));
-        mDatabase = new SqliteLinkDatabase(this);
-        //mDatabase.getLinks();
 
-        LinkDatabase mDatabase = new SqliteLinkDatabase(this);
-        LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
-        mList.setAdapter(mAdapter);
 
-        LinksApiFactory.get().getLinks().enqueue(new Callback<List<Link>>() {
-            @Override
-            public void onResponse(Call<List<Link>> call, Response<List<Link>> response) {
-                Toast.makeText(PocketListActivity.this, "onResponse", Toast.LENGTH_SHORT).show();
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Link>> call, Throwable t) {
-                Toast.makeText(PocketListActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
-
-            }
-        });
     }
 
     @OnClick(R.id.fab)
@@ -85,14 +64,25 @@ public class PocketListActivity extends AppCompatActivity
     @Override
     public void onRowClick(Link link) {
         Intent intent = new Intent(this, EditElementActivity.class);
-        intent.putExtra(EditElementActivity.EXTRA_ID, link.getId());
+        intent.putExtra(EditElementActivity.EXTRA_LINK, link);
         startActivity(intent);
     }
 
     @Override
     public void onRowLongClick(Link link) {
-        mDatabase.delete(link);
-        refreshList();
+        LinksApiFactory.get().deleteLink(link.getId())
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        refreshList();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(PocketListActivity.this, "Błąd usuwania rekordu",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
@@ -127,7 +117,6 @@ public class PocketListActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mDatabase = new SqliteLinkDatabase(this);
 
         refreshList();
     }

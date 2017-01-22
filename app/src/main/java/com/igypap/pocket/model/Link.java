@@ -3,12 +3,14 @@ package com.igypap.pocket.model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+
 /**
  * Created by igypap on 08.01.17.
  */
 
 @DatabaseTable(tableName = "link")
-public class Link implements Comparable<Link> {
+public class Link implements Comparable<Link>, Serializable {
     public static final int TYPE_PHONE = 1;
     public static final int TYPE_LINK = 2;
 

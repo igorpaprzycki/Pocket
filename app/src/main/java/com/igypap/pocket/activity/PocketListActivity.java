@@ -9,10 +9,12 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.igypap.pocket.R;
 import com.igypap.pocket.adapter.LinksAdapter;
 import com.igypap.pocket.database.LinkDatabase;
+import com.igypap.pocket.database.LinksApiFactory;
 import com.igypap.pocket.database.SqliteLinkDatabase;
 import com.igypap.pocket.model.Link;
 import com.igypap.pocket.settings.SettingsPreferences;
@@ -25,6 +27,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PocketListActivity extends AppCompatActivity
         implements LinksAdapter.ActionListener, PopupMenu.OnMenuItemClickListener {
@@ -49,6 +54,19 @@ public class PocketListActivity extends AppCompatActivity
         LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
         mList.setAdapter(mAdapter);
 
+        LinksApiFactory.get().getLinks().enqueue(new Callback<List<Link>>() {
+            @Override
+            public void onResponse(Call<List<Link>> call, Response<List<Link>> response) {
+                Toast.makeText(PocketListActivity.this, "onResponse", Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Link>> call, Throwable t) {
+                Toast.makeText(PocketListActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     @OnClick(R.id.fab)
@@ -94,10 +112,12 @@ public class PocketListActivity extends AppCompatActivity
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_call) {
-            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mLink.getReference()));
+            Intent intent = new Intent(Intent.ACTION_DIAL,
+                    Uri.parse("tel:" + mLink.getReference()));
             startActivity(intent);
         } else if (item.getItemId() == R.id.action_sms) {
-            Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("sms:" + mLink.getReference()));
+            Intent intent = new Intent(Intent.ACTION_SENDTO,
+                    Uri.parse("sms:" + mLink.getReference()));
             intent.putExtra("sms_body", "Cześć " + mLink.getName());
             startActivity(intent);
         }
@@ -113,23 +133,38 @@ public class PocketListActivity extends AppCompatActivity
     }
 
     private void refreshList() {
-        SettingsPreferences prefs = new SettingsPreferences(this);
-        List<Link> links = mDatabase.getLinks();
-        if (prefs.isSort()) {
-            Collections.sort(links);
-            Collections.reverse(links);
-        } else {
-            Collections.sort(links);
-        }
-        for (Iterator<Link> it = links.iterator(); it.hasNext(); ) {
-            Link element = it.next();
-            boolean shouldRemoveLink = element.getType() == Link.TYPE_LINK && !prefs.isShowLinks();
-            boolean shouldRemovePhone = element.getType() == Link.TYPE_PHONE && !prefs.isShowPhones();
+        LinksApiFactory.get().getLinks().enqueue(new Callback<List<Link>>() {
+            @Override
+            public void onResponse(Call<List<Link>> call, Response<List<Link>> response) {
+                SettingsPreferences prefs = new SettingsPreferences(PocketListActivity.this);
+                List<Link> links = response.body();
+                if (prefs.isSort()) {
+                    Collections.sort(links);
+                    Collections.reverse(links);
+                } else {
+                    Collections.sort(links);
+                }
+                for (Iterator<Link> it = links.iterator(); it.hasNext(); ) {
+                    Link element = it.next();
+                    boolean shouldRemoveLink = element.getType() ==
+                            Link.TYPE_LINK && !prefs.isShowLinks();
+                    boolean shouldRemovePhone = element.getType() ==
+                            Link.TYPE_PHONE && !prefs.isShowPhones();
 
-            if (shouldRemoveLink || shouldRemovePhone) {
-                it.remove();
+                    if (shouldRemoveLink || shouldRemovePhone) {
+                        it.remove();
+                    }
+                }
+                mList.setAdapter(new LinksAdapter(links, PocketListActivity.this));
             }
-        }
-        mList.setAdapter(new LinksAdapter(links, this));
+
+            @Override
+            public void onFailure(Call<List<Link>> call, Throwable t) {
+                Toast.makeText(PocketListActivity.this,
+                        "Bład pobierania listy !", Toast.LENGTH_SHORT).show();
+                t.printStackTrace();
+            }
+        });
+
     }
 }

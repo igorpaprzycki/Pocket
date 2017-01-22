@@ -55,6 +55,9 @@ public class CreateElementActivity extends AppCompatActivity {
                 String[] parts = url.split("\n");
                 url = parts[1];
                 mFormTitle.setText(parts[0]);
+            } else {
+                String name = url.split("\\.")[1];
+                mFormTitle.setText(name.toUpperCase());
             }
             mFormReference.setText(url);
             mFormType.setSelection(getTypeIndex((Link.TYPE_LINK)));

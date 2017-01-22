@@ -3,7 +3,7 @@ package com.igypap.pocket.activity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.igypap.pocket.database.LinksApiFactory;
+import com.igypap.pocket.api.LinksApiFactory;
 import com.igypap.pocket.model.Link;
 
 import retrofit2.Call;

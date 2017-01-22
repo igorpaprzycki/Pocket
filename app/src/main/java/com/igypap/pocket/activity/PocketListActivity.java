@@ -7,13 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.igypap.pocket.R;
 import com.igypap.pocket.adapter.LinksAdapter;
-import com.igypap.pocket.database.LinksApiFactory;
+import com.igypap.pocket.api.LinksApiFactory;
 import com.igypap.pocket.model.Link;
 import com.igypap.pocket.settings.SettingsPreferences;
 
@@ -108,7 +109,7 @@ public class PocketListActivity extends AppCompatActivity
         } else if (item.getItemId() == R.id.action_sms) {
             Intent intent = new Intent(Intent.ACTION_SENDTO,
                     Uri.parse("sms:" + mLink.getReference()));
-            intent.putExtra("sms_body", "Cześć " + mLink.getName());
+            intent.putExtra("sms_body", "Cześć " + mLink.getName() + ", ");
             startActivity(intent);
         }
         return true;
@@ -154,6 +155,22 @@ public class PocketListActivity extends AppCompatActivity
                 t.printStackTrace();
             }
         });
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_list, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.item_refresh) {
+            refreshList();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
 
     }
 }

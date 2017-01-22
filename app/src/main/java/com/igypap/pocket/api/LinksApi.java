@@ -1,4 +1,4 @@
-package com.igypap.pocket.database;
+package com.igypap.pocket.api;
 
 import com.igypap.pocket.model.Link;
 

@@ -1,4 +1,4 @@
-package com.igypap.pocket.database;
+package com.igypap.pocket.api;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

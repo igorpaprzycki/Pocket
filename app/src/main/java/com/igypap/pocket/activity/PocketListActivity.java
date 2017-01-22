@@ -49,7 +49,6 @@ public class PocketListActivity extends AppCompatActivity
         LinksAdapter mAdapter = new LinksAdapter(mDatabase.getLinks(), this);
         mList.setAdapter(mAdapter);
 
-
     }
 
     @OnClick(R.id.fab)

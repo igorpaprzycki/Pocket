@@ -32,12 +32,4 @@ public class EditElementActivity extends CreateElementActivity {
         mFormType.setSelection(getTypeIndex(link.getType()));
     }
 
-    private int getTypeIndex(int type) {
-        for (int i = 0; i < mTypesMapping.length; i++) {
-            if (mTypesMapping[i] == type) {
-                return i;
-            }
-        }
-        return Link.TYPE_LINK;
-    }
 }

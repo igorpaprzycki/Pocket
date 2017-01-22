@@ -1,5 +1,6 @@
 package com.igypap.pocket.activity;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -39,10 +40,25 @@ public class CreateElementActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         mDatabase = new SqliteLinkDatabase(this);
 
+        handleSharing();
 
         //get the mapping array without ButterKnife
 //        getResources().getIntArray(R.array.link_types_mapping);
 
+    }
+
+
+    private void handleSharing() {
+        if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
+            String url = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+            if (url.contains("\n")) {
+                String[] parts = url.split("\n");
+                url = parts[1];
+                mFormTitle.setText(parts[0]);
+            }
+            mFormReference.setText(url);
+            mFormType.setSelection(getTypeIndex((Link.TYPE_LINK)));
+        }
     }
 
     @OnItemSelected(R.id.form_type)
@@ -100,5 +116,14 @@ public class CreateElementActivity extends AppCompatActivity {
         link.setReference(reference);
         link.setType(getSelectedType());
         mDatabase.create(link);
+    }
+
+    protected int getTypeIndex(int type) {
+        for (int i = 0; i < mTypesMapping.length; i++) {
+            if (mTypesMapping[i] == type) {
+                return i;
+            }
+        }
+        return Link.TYPE_LINK;
     }
 }
